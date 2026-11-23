@@ -16,10 +16,17 @@ import { join } from "node:path";
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? join(process.cwd(), "out");
 const target = join(outDir, "entry.txt");
 
+// The entry must be exactly one word: 1-30 characters, no whitespace.
+// Guard the gate here so a bad word can never be written silently.
+const word = "SKYNET";
+if (word.length < 1 || word.length > 30 || /\s/.test(word)) {
+  throw new Error(`entry word fails the gate: ${JSON.stringify(word)}`);
+}
+
 mkdirSync(outDir, { recursive: true });
 
 // Exactly one word, no trailing newline: "SKYNET".
-writeFileSync(target, "SKYNET", "utf8");
+writeFileSync(target, word, "utf8");
 
 // Read back what was written so a truncated write can never pass silently.
 import { readFileSync } from "node:fs";
